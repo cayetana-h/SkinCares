@@ -111,6 +111,7 @@ def flag_non_ingredients(df, min_length=15):
     
     return flagged
 
+
 def apply_review_actions(df, review_path):
     """
     To apply the review actions from the review file to the dataset
@@ -119,9 +120,19 @@ def apply_review_actions(df, review_path):
         df_review = pd.read_excel(review_path)
     else:
         df_review = pd.read_csv(review_path)
+    
+    df_review.columns = df_review.columns.str.strip()
+
+    required_cols = ["Brand", "Name", "Action", "Fill_in_Ingredients"]
+    missing = set(required_cols) - set(df_review.columns)
+    if missing:
+        raise ValueError(f"Review file missing columns: {missing}")
+
+    df = standardize_data(df)
+    df_review = standardize_data(df_review)
 
     df = df.merge(
-        df_review[['Brand', 'Name', 'action', 'Fill_in_Ingredients']],
+        df_review[required_cols],
         on=['Brand', 'Name'],
         how='left'
     )
