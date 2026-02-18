@@ -37,13 +37,10 @@ def run_pipeline(raw_path, processed_path=None, reviewed_path=None, flag_non_ing
     flagged = None
     if flag_non_ingredients_rows:
         flagged = flag_non_ingredients(df)
-        if not flagged.empty:
-            print(f"Flagged {len(flagged)} suspicious ingredient entries.")
     
     # step 5
-    if reviewed_path:
-        df_reviewed = pd.read_excel(reviewed_path)
-        df = apply_review_actions(df, df_reviewed)
+    if reviewed_path is not None:
+        df = apply_review_actions(df, reviewed_path)
         print("Manual review actions applied.")
 
     # step 6
@@ -55,6 +52,7 @@ def run_pipeline(raw_path, processed_path=None, reviewed_path=None, flag_non_ing
     # step 8
     if processed_path is None:
         processed_path = Path(raw_path).parent / "cosmetics_processed.csv"
+
     df.to_csv(processed_path, index=False)
     print(f"Processed dataset saved to: {processed_path}")
     
