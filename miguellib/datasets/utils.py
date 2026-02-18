@@ -144,3 +144,4 @@ def apply_review_actions(df, review_path):
     df = df.drop(columns=['Action', 'Fill_in_Ingredients'])
 
     return df
+
