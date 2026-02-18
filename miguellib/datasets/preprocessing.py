@@ -4,7 +4,8 @@ from .utils import (
     load_df,
     validate_data,
     standardize_data,
-    flag_non_ingredients
+    flag_non_ingredients,
+    apply_review_actions
 )
 
 """
@@ -13,11 +14,13 @@ This module implements the full preprocessing pipeline for the cosmetics dataset
     2. Validating raw dataset
     3. Cleaning / standardizing ingredients
     4. Flagging suspicious ingredient entries
-    5. Validating cleaned dataset
-    6. Saving processed dataset 
+    5. Applying manual review actions (used xls file with review decisions)
+    6. Re-standardizing after manual review
+    7. Re-validating the cleaned dataset
+    8. Saving the processed dataset to a new file 
 """
 
-def run_pipeline(raw_path, processed_path=None, flag_non_ingredients_rows=True):
+def run_pipeline(raw_path, processed_path=None, reviewed_path=None, flag_non_ingredients_rows=True):
     """
     Full preprocessing pipeline for the cosmetics dataset.
     """
@@ -31,21 +34,28 @@ def run_pipeline(raw_path, processed_path=None, flag_non_ingredients_rows=True):
     df = standardize_data(df)
     
     # step 4
+    flagged = None
     if flag_non_ingredients_rows:
         flagged = flag_non_ingredients(df)
         if not flagged.empty:
-            print("Review the flagged rows before proceeding.")
+            print(f"Flagged {len(flagged)} suspicious ingredient entries.")
     
     # step 5
+    if reviewed_path:
+        df_reviewed = pd.read_excel(reviewed_path)
+        df = apply_review_actions(df, df_reviewed)
+        print("Manual review actions applied.")
+
+    # step 6
+    df = standardize_data(df)
+
+    # step 7
     validate_data(df)
     
-    # step 6
-    if flagged.empty:
-        if processed_path is None:
-            processed_path = Path(raw_path).parent / "cosmetics_processed.csv"
-        df.to_csv(processed_path, index=False)
-        print(f"Processed dataset saved to: {processed_path}")
-    else:
-        print("Dataset not saved. Suspicious ingredient entries need review first.")
+    # step 8
+    if processed_path is None:
+        processed_path = Path(raw_path).parent / "cosmetics_processed.csv"
+    df.to_csv(processed_path, index=False)
+    print(f"Processed dataset saved to: {processed_path}")
     
-    return df
+    return df, flagged

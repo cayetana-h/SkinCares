@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 def load_df(path):
     """To load a csv file and return a pandas DataFrame."""
@@ -64,11 +65,14 @@ def standardize_data(df: pd.DataFrame) -> pd.DataFrame:
     def clean_ingredients(ing):
         if not isinstance(ing, str):
             return ing
-        ing = ing.strip().lower()  
-        ing = ", ".join([x.strip() for x in ing.split(",")])  
+        ing = ing.strip().lower()
+        ing = ", ".join([re.sub(r'\s+', ' ', x.strip()) for x in ing.split(",")]) 
+        ing = re.sub(r'(\w)-\s+(\w)', r'\1-\2', ing)  
         return ing
     
     df['Ingredients'] = df['Ingredients'].apply(clean_ingredients)
+
+    df['Ingredients'] = df['Ingredients'].str.replace(r'\s+', ' ', regex=True)
     
     # applying title case to Brand names and stripping extra spaces
     df['Brand'] = df['Brand'].apply(lambda x: x.strip().title() if isinstance(x, str) else x)
@@ -77,6 +81,7 @@ def standardize_data(df: pd.DataFrame) -> pd.DataFrame:
     for col in ['Name', 'Label']:
         if col in df.columns:
             df[col] = df[col].apply(lambda x: x.strip() if isinstance(x, str) else x)
+            df[col] = df[col].str.replace(r'[™®]', '', regex=True)
     
     # Ensuring Price and Rank are numeric 
     for col in ['Price', 'Rank']:
@@ -105,3 +110,26 @@ def flag_non_ingredients(df, min_length=15):
             print(f"Ingredients: {row['Ingredients']}\n")
     
     return flagged
+
+def apply_review_actions(df, review_path):
+    """
+    To apply the review actions from the review file to the dataset
+    """
+    if str(review_path).endswith((".xlsx", ".xls")):
+        df_review = pd.read_excel(review_path)
+    else:
+        df_review = pd.read_csv(review_path)
+
+    df = df.merge(
+        df_review[['Brand', 'Name', 'action', 'Fill_in_Ingredients']],
+        on=['Brand', 'Name'],
+        how='left'
+    )
+
+    replace_mask = df['Action'] == 'replace'
+    df.loc[replace_mask, 'Ingredients'] = df.loc[replace_mask, 'Fill_in_Ingredients']
+
+    df = df[df['Action'] != 'remove'].copy()
+    df = df.drop(columns=['Action', 'Fill_in_Ingredients'])
+
+    return df
