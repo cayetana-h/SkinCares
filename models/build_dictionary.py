@@ -2,12 +2,14 @@ import pandas as pd
 from collections import Counter
 import json
 from pathlib import Path
+import re
 
 # Config
 
-TOKENS_PATH = Path("data/processed/products_tokens.csv")
-FREQ_OUTPUT = Path("artifacts/top_ingredients.csv")
-DICT_OUTPUT = Path("features/ingredient_groups.json")
+ROOT = Path(__file__).resolve().parent.parent
+TOKENS_PATH = ROOT / "data" / "processed" / "products_tokens.csv"
+FREQ_OUTPUT = ROOT / "artifacts" / "top_ingredients.csv"
+DICT_OUTPUT = ROOT / "features" / "ingredient_groups.json"
 
 TOP_K = 80   # how many frequent ingredients to inspect
 
@@ -27,7 +29,11 @@ def load_ingredient_tokens():
 
     for row in df["ingredient_tokens"].dropna():
         parts = [x.strip() for x in row.split(",") if x.strip()]
-        all_ingredients.extend(parts)
+        for part in parts:
+            # Strip surrounding brackets, quotes, whitespace
+            cleaned = re.sub(r"^[\['\"\s]+|[\]'\"\s]+$", "", part).strip().lower()
+            if cleaned:
+                all_ingredients.append(cleaned)
 
     return all_ingredients
 
