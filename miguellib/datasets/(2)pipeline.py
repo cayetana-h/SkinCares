@@ -20,7 +20,7 @@ This module implements the full preprocessing pipeline for the cosmetics dataset
     8. Saving the processed dataset to a new file 
 """
 
-def run_pipeline(raw_path, processed_path=None, reviewed_path=None, flag_non_ingredients_rows=True):
+def run_pipeline2(raw_path, processed_path=None, reviewed_path=None, flag_non_ingredients_rows=True):
     """
     Full preprocessing pipeline for the cosmetics dataset.
     """
