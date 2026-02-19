@@ -6,8 +6,8 @@ import re
 
 # Config
 
-ROOT = Path(__file__).resolve().parent.parent
-TOKENS_PATH = ROOT / "data" / "processed" / "products_tokens.csv"
+ROOT = Path(__file__).resolve().parent.parent.parent
+TOKENS_PATH = ROOT / "miguellib" / "datasets" / "datasets" / "products_tokens.csv"
 FREQ_OUTPUT = ROOT / "artifacts" / "top_ingredients.csv"
 DICT_OUTPUT = ROOT / "features" / "ingredient_groups.json"
 

@@ -6,11 +6,11 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 
 VECTORS_PATH = ROOT / "artifacts" / "product_vectors.npy"
 INDEX_PATH = ROOT / "artifacts" / "product_index.json"
-METADATA_PATH = ROOT / "data" / "processed" / "products_clean.csv"
+METADATA_PATH = ROOT / "miguellib" / "datasets" / "datasets" / "products_clean.csv"
 
 
 # Load everything once
