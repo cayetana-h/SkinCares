@@ -20,7 +20,6 @@ extras_require = {
     "dev": [
         "pytest>=7.0,<9",
         "ruff>=0.6,<1",
-        "black>=23.0,<25",
         "ipykernel>=6,<7",
         "jupyter>=1,<2",
     ]

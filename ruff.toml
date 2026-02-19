@@ -1,0 +1,20 @@
+line-length = 88
+target-version = "py39"
+
+extend-exclude = [
+  "*.ipynb",
+]
+
+exclude = [
+  "artifacts",
+  "data",
+  "docs",
+  "examples",
+]
+
+[lint]
+select = ["F"]
+
+[lint.per-file-ignores]
+"miguellib/datasets/utils.py" = ["F401", "F811", "F821", "F841"]
+"miguellib/datasets/(2)pipeline.py" = ["F401"]
