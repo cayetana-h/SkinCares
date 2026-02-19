@@ -342,7 +342,8 @@ def apply_synonyms_to_tokens(
 
     return out
 
-    CANON_RULES: List[Tuple[str, List[str]]] = [
+
+CANON_RULES: List[Tuple[str, List[str]]] = [
     # water / base-water
     ("water", [
         r".*:\s*water\s*$",

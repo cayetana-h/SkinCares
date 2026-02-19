@@ -10,10 +10,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 
-DATA_PRODUCTS = ROOT / "data" / "processed" / "products_clean.csv"
-DATA_TOKENS = ROOT / "data" / "processed" / "products_tokens.csv"
+DATA_PRODUCTS = ROOT / "miguellib" / "datasets" / "datasets" / "products_clean.csv"
+DATA_TOKENS = ROOT / "miguellib" / "datasets" / "datasets" / "products_tokens.csv"
 GROUPS_PATH = ROOT / "features" / "ingredient_groups.json"
 
 ARTIFACT_DIR = ROOT / "artifacts"
