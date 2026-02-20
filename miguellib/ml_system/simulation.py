@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from typing import List, Dict, Any
 
-import numpy as np
 import pandas as pd
 
 from miguellib.ml_system.artifacts import load_artifacts, find_project_root

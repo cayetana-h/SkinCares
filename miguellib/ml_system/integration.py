@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
-import numpy as np
 import pandas as pd
 
 from miguellib.ml_system.artifacts import load_artifacts
-from miguellib.ml_system.candidate_source import get_candidates, get_candidates
+from miguellib.ml_system.candidate_source import get_candidates
 from miguellib.ml_system.feedback_update import UserState, compute_user_vector
 from miguellib.ml_system.reranker import rerank_candidates
 
