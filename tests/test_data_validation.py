@@ -23,7 +23,6 @@ def test_validate_artifact_inputs_success(tmp_path: Path):
             "product_id": ["1"],
             "category": ["Moisturizer"],
             "price": [10.0],
-            "ingredient_tokens": ["water, glycerin"],
         }
     )
     tokens = pd.DataFrame({"product_id": ["1"], "ingredient_tokens": ["water, glycerin"]})
@@ -57,7 +56,6 @@ def test_validate_artifact_inputs_empty_tokens(tmp_path: Path):
             "product_id": ["1"],
             "category": ["Moisturizer"],
             "price": [10.0],
-            "ingredient_tokens": [""],
         }
     )
     tokens = pd.DataFrame({"product_id": ["1"], "ingredient_tokens": [""]})

@@ -19,7 +19,7 @@ class DataValidationError(ValueError):
         self.issues = list(issues)
 
 
-REQUIRED_PRODUCTS_COLUMNS = {"product_id", "category", "price", "ingredient_tokens"}
+REQUIRED_PRODUCTS_COLUMNS = {"product_id", "category", "price"}
 REQUIRED_TOKENS_COLUMNS = {"product_id", "ingredient_tokens"}
 
 
@@ -79,8 +79,6 @@ def validate_artifact_inputs(root: Path) -> None:
         _assert_prices(products["price"], issues)
     if "category" in products.columns:
         _assert_non_empty_strings(products["category"], "category", issues)
-    if "ingredient_tokens" in products.columns:
-        _assert_non_empty_strings(products["ingredient_tokens"], "ingredient_tokens", issues)
     if "ingredient_tokens" in tokens.columns:
         _assert_non_empty_strings(tokens["ingredient_tokens"], "tokens.ingredient_tokens", issues)
 

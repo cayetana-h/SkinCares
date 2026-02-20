@@ -40,6 +40,19 @@ Run a minimal evaluation report locally with:
 
 See `docs/evaluation.md` for details.
 
+## Docker (local)
+
+Build artifacts, then run the evaluation container with Compose:
+
+    python -m pip install -e .
+    python scripts/build_artifacts.py --schema-version v1
+    docker compose up --build
+
+If you want a one-off run without Compose:
+
+    docker build -t skincares:latest .
+    docker run --rm skincares:latest
+
 ## Coding Principles
 
 Next there are a few coding principles that I follow when working on machine learning projects.
