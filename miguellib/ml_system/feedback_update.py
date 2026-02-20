@@ -1,93 +1,147 @@
-# miguellib/ml_system/feedback_update.py
 
-from dataclasses import dataclass, field
-from typing import List, Optional
+import json
+from pathlib import Path
+from typing import List, Dict, Optional
+
 import numpy as np
 
 
-@dataclass
-class UserState:
-    dim: int
-    base_profile: np.ndarray = field(init=False)
-    liked_vectors: List[np.ndarray] = field(default_factory=list)
-    disliked_vectors: List[np.ndarray] = field(default_factory=list)
-    reason_history: List[List[str]] = field(default_factory=list)
-    interactions: int = 0
+def find_project_root() -> Path:
+    here = Path(__file__).resolve()
+    for p in [here] + list(here.parents):
+        if (p / "artifacts").exists():
+            return p
+    raise FileNotFoundError("Could not find project root (folder containing 'artifacts/').")
 
-    def __post_init__(self):
-        self.base_profile = np.zeros(self.dim, dtype=np.float32)
+
+def load_artifacts():
+    root = find_project_root()
+
+    vectors = np.load(root / "artifacts" / "product_vectors.npy")
+
+    with open(root / "artifacts" / "product_index.json", "r", encoding="utf-8") as f:
+        product_index = json.load(f)
+
+    schema = None
+    schema_path = root / "artifacts" / "feature_schema.json"
+    if schema_path.exists():
+        with open(schema_path, "r", encoding="utf-8") as f:
+            schema = json.load(f)
+
+    index_to_id = {v: k for k, v in product_index.items()}
+    return vectors, product_index, index_to_id, schema
+
+
+class UserState:
+    """Tracks user interactions and preferences."""
+
+    def __init__(self, dim: int):
+        self.dim = dim
+
+        
+        self.liked_vectors: List[np.ndarray] = []
+        self.disliked_vectors: List[np.ndarray] = []
+        self.irritation_vectors: List[np.ndarray] = []
+
+        
+        self.liked_reasons: List[str] = []
+        self.disliked_reasons: List[str] = []
+        self.irritation_reasons: List[str] = []
+
+        
+        self.interactions: int = 0
+        self.liked_count: int = 0
+        self.disliked_count: int = 0
+        self.irritation_count: int = 0
+
+    def add_liked(self, vec: np.ndarray, reasons: List[str]):
+        self.liked_vectors.append(vec)
+        self.liked_reasons.extend(reasons)
+        self.interactions += 1
+        self.liked_count += 1
+
+    def add_disliked(self, vec: np.ndarray, reasons: List[str]):
+        self.disliked_vectors.append(vec)
+        self.disliked_reasons.extend(reasons)
+        self.interactions += 1
+        self.disliked_count += 1
+
+    def add_irritation(self, vec: np.ndarray, reasons: List[str]):
+        self.irritation_vectors.append(vec)
+        self.irritation_reasons.extend(reasons)
+        self.interactions += 1
+        self.irritation_count += 1
 
 
 def update_user_state(
-    state: UserState,
+    user: UserState,
     reaction: str,
-    product_vector: np.ndarray,
+    product_vec: np.ndarray,
     reason_tags: Optional[List[str]] = None,
 ):
-    reaction = reaction.lower()
+    """
+    Update user state based on a single interaction.
+
+    Design choice:
+    - "irritation" is treated as a strong negative, so we:
+        (1) record it in irritation_vectors (for stronger penalty in user vector)
+        (2) ALSO count it as a disliked interaction (so summaries + metrics match intuition)
+    """
+    if reason_tags is None:
+        reason_tags = []
+
+    reaction = (reaction or "").lower().strip()
 
     if reaction == "like":
-        state.liked_vectors.append(product_vector)
-    elif reaction in ["dislike", "irritation"]:
-        state.disliked_vectors.append(product_vector)
+        user.add_liked(product_vec, reason_tags)
 
-    state.reason_history.append(reason_tags or [])
-    state.interactions += 1
-    return state
+    elif reaction == "dislike":
+        user.add_disliked(product_vec, reason_tags)
 
+    elif reaction == "irritation":
+        
+        user.add_disliked(product_vec, reason_tags)
+        user.add_irritation(product_vec, reason_tags)
 
-def apply_reason_penalties(
-    user_vector: np.ndarray,
-    reason_tags: List[str],
-    schema: dict,
-    penalty_strength: float = 1.5,
-) -> np.ndarray:
+    else:
+        
+        return user
 
-    if not schema or "groups" not in schema:
-        return user_vector
-
-    tfidf_len = len(schema["tfidf"])
-    group_names = schema["groups"]
-    updated = user_vector.copy()
-
-    for reason in reason_tags:
-        reason = reason.lower()
-
-        if "irritat" in reason and "group_irritant" in group_names:
-            idx = tfidf_len + group_names.index("group_irritant")
-            updated[idx] -= penalty_strength
-
-        if "greasy" in reason and "group_occlusive" in group_names:
-            idx = tfidf_len + group_names.index("group_occlusive")
-            updated[idx] -= penalty_strength
-
-        if "not moisturizing" in reason and "group_humectant" in group_names:
-            idx = tfidf_len + group_names.index("group_humectant")
-            updated[idx] += penalty_strength
-
-    return updated
+    return user
 
 
-def compute_user_vector(
-    state: UserState,
-    schema: Optional[dict] = None,
-    alpha: float = 0.5,
-    beta: float = 1.0,
-    gamma: float = 0.8,
-) -> np.ndarray:
+def compute_user_vector(user: UserState, schema: Optional[Dict] = None) -> np.ndarray:
+    """
+    Compute user preference vector from feedback.
 
-    base = state.base_profile
-    liked_avg = np.mean(state.liked_vectors, axis=0) if state.liked_vectors else 0
-    disliked_avg = np.mean(state.disliked_vectors, axis=0) if state.disliked_vectors else 0
+    Current weighting:
+      +2.0 * mean(liked vectors)
+      -1.0 * mean(disliked vectors)
+      -2.0 * mean(irritation vectors)
 
-    user_vec = alpha * base + beta * liked_avg - gamma * disliked_avg
-    user_vec = np.asarray(user_vec, dtype=np.float32)
+    Note: Because irritation is also counted in disliked_vectors, it contributes to both
+    the general negative signal and the stronger irritation-specific penalty.
+    """
+    user_vec = np.zeros(user.dim, dtype=np.float32)
 
-    if schema:
-        for reasons in state.reason_history:
-            user_vec = apply_reason_penalties(user_vec, reasons, schema)
+    
+    if user.liked_vectors:
+        liked_avg = np.mean(user.liked_vectors, axis=0)
+        user_vec += 2.0 * liked_avg
 
-    if np.linalg.norm(user_vec) == 0:
-        return base.copy()
+    
+    if user.disliked_vectors:
+        disliked_avg = np.mean(user.disliked_vectors, axis=0)
+        user_vec -= 1.0 * disliked_avg
+
+    
+    if user.irritation_vectors:
+        irritation_avg = np.mean(user.irritation_vectors, axis=0)
+        user_vec -= 2.0 * irritation_avg
+
+    
+    norm = np.linalg.norm(user_vec)
+    if norm > 1e-9:
+        user_vec = user_vec / norm
 
     return user_vec

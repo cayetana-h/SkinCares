@@ -1,7 +1,6 @@
-# miguellib/ml_system/artifacts.py
-
 import json
 from pathlib import Path
+
 import numpy as np
 
 
@@ -18,15 +17,14 @@ def load_artifacts():
 
     vectors = np.load(root / "artifacts" / "product_vectors.npy")
 
-    with open(root / "artifacts" / "product_index.json", "r") as f:
+    with open(root / "artifacts" / "product_index.json", "r", encoding="utf-8") as f:
         product_index = json.load(f)
 
     schema = None
     schema_path = root / "artifacts" / "feature_schema.json"
     if schema_path.exists():
-        with open(schema_path, "r") as f:
+        with open(schema_path, "r", encoding="utf-8") as f:
             schema = json.load(f)
 
     index_to_id = {v: k for k, v in product_index.items()}
-
     return vectors, product_index, index_to_id, schema
