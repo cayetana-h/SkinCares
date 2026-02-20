@@ -14,6 +14,10 @@ This pipeline builds vector artifacts and writes a manifest with hashes for data
 python scripts/build_artifacts.py --schema-version v1
 ```
 
+## Validation
+Before building vectors, the pipeline validates required columns, basic quality checks, and
+presence of input files. The build fails fast if validation fails.
+
 ## Manifest contents
 The manifest stores:
 - `data_hashes`: hashes for dataset inputs

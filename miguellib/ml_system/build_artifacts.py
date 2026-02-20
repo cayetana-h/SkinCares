@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List
 
 from miguellib.ml_system.artifacts import find_project_root
+from miguellib.ml_system.data_validation import validate_artifact_inputs
 from miguellib.ml_system.manifest import build_manifest, write_manifest
 from miguellib.models import vectorizer
 
@@ -41,6 +42,7 @@ def build(schema_version: str = "v1") -> Path:
     code_paths = _default_code_paths(root)
     artifact_paths = _default_artifact_paths(root)
 
+    validate_artifact_inputs(root)
     vectorizer.run()
 
     for path in data_paths + code_paths + artifact_paths:
