@@ -1,0 +1,51 @@
+name: Build artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      schema_version:
+        description: "Schema version label to record in manifest"
+        required: false
+        default: "v1"
+      upload_name:
+        description: "Artifact bundle name"
+        required: false
+        default: "artifacts-bundle"
+
+jobs:
+  build-artifacts:
+    name: Build artifacts and manifest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: setup.py
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+
+      - name: Build artifacts
+        run: |
+          python scripts/build_artifacts.py --schema-version "${{ inputs.schema_version }}"
+
+      - name: Upload artifacts bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.upload_name }}
+          path: |
+            artifacts/product_vectors.npy
+            artifacts/product_index.json
+            artifacts/feature_schema.json
+            artifacts/tfidf.joblib
+            artifacts/manifest.json
+          if-no-files-found: error
