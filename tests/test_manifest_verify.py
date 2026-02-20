@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 from miguellib.ml_system.manifest import build_manifest, write_manifest
