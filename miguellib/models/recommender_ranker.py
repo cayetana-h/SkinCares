@@ -4,15 +4,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from models.similarity import score_similarity
-from models.user_profile import build_user_vector
+from miguellib.models.similarity import score_similarity
+from miguellib.models.user_profile import build_user_vector
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 
 VECTORS_PATH = ROOT / "artifacts" / "product_vectors.npy"
 INDEX_PATH = ROOT / "artifacts" / "product_index.json"
-METADATA_PATH = ROOT / "data" / "processed" / "products_clean.csv"
-TOKENS_PATH = ROOT / "data" / "processed" / "products_tokens.csv"
+METADATA_PATH = ROOT / "miguellib" / "datasets" / "datasets" / "products_clean.csv"
+TOKENS_PATH = ROOT / "miguellib" / "datasets" / "datasets" / "products_tokens.csv"
 
 _EMPTY_RECS = pd.DataFrame(
     columns=["product_id", "brand", "category", "price", "similarity"]

@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity as sklearn_cosine
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 SCHEMA_PATH = ROOT / "artifacts" / "feature_schema.json"
 
 
