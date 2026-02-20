@@ -42,6 +42,10 @@ jobs:
         run: |
           python scripts/build_artifacts.py --schema-version "${{ inputs.schema_version }}"
 
+      - name: Verify manifest hashes
+        run: |
+          python scripts/verify_manifest.py
+
       - name: Upload artifacts bundle
         uses: actions/upload-artifact@v4
         with:

@@ -18,6 +18,13 @@ python scripts/build_artifacts.py --schema-version v1
 Before building vectors, the pipeline validates required columns, basic quality checks, and
 presence of input files. The build fails fast if validation fails.
 
+## Manifest verification
+After building, you can verify that data, code, and artifact hashes match the manifest:
+
+```bash
+python scripts/verify_manifest.py
+```
+
 ## Manifest contents
 The manifest stores:
 - `data_hashes`: hashes for dataset inputs
