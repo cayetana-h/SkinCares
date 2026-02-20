@@ -42,10 +42,13 @@ jobs:
       uses: actions/setup-python@v5 # Info: https://github.com/actions/setup-python
       with:
         python-version: ${{ matrix.python }}
+        cache: "pip"
+        cache-dependency-path: setup.py
     
     - name: Install dependencies
       run: |
-        pip install .
+        python -m pip install --upgrade pip
+        pip install .[dev]
 
     - name: Python version and dependency list
       run: |
@@ -54,6 +57,9 @@ jobs:
         which python
         pip list
 
+    - name: Lint
+      run: ruff check .
+
     - name: Run tests
       run: |
-        pytest tests --disable-warnings --durations 0
+        python -m pytest tests --disable-warnings --durations 0
