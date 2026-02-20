@@ -32,6 +32,14 @@ See `docs/artifacts_pipeline.md` for details.
 You can trigger the **Build artifacts** workflow manually from GitHub Actions.
 It will generate the artifacts + `artifacts/manifest.json` and upload them as a bundle.
 
+## Evaluation harness
+
+Run a minimal evaluation report locally with:
+
+    python scripts/run_evaluation.py
+
+See `docs/evaluation.md` for details.
+
 ## Coding Principles
 
 Next there are a few coding principles that I follow when working on machine learning projects.

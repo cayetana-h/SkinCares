@@ -1,0 +1,13 @@
+{
+  "scenarios": [
+    {
+      "scenario": "baseline_moisturizer_budget",
+      "top_n": 10,
+      "metrics": {
+        "constraint_compliance": 1.0,
+        "category_diversity": 0.1,
+        "avg_similarity": 0.9264841079711914
+      }
+    }
+  ]
+}
