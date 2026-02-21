@@ -19,6 +19,40 @@ To set up the project, the easiest way is to copy the all the folders into an em
     pip install -e .
     python -c "import miguellib; print(miguellib.__version__)"
 
+## Artifacts pipeline
+
+The vector artifacts and manifest can be built locally with:
+
+    python scripts/build_artifacts.py --schema-version v1
+
+See `docs/artifacts_pipeline.md` for details.
+
+## CI: on-demand artifacts build
+
+You can trigger the **Build artifacts** workflow manually from GitHub Actions.
+It will generate the artifacts + `artifacts/manifest.json` and upload them as a bundle.
+
+## Evaluation harness
+
+Run a minimal evaluation report locally with:
+
+    python scripts/run_evaluation.py
+
+See `docs/evaluation.md` for details.
+
+## Docker (local)
+
+Build artifacts, then run the evaluation container with Compose:
+
+    python -m pip install -e .
+    python scripts/build_artifacts.py --schema-version v1
+    docker compose up --build
+
+If you want a one-off run without Compose:
+
+    docker build -t skincares:latest .
+    docker run --rm skincares:latest
+
 ## Coding Principles
 
 Next there are a few coding principles that I follow when working on machine learning projects.

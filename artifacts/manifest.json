@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-02-20T23:41:30.933521+00:00",
+  "data_hashes": {
+    "miguellib/datasets/datasets/products_clean.csv": "55b780bb63e54bef826434fc0cb2d815674cb370f5069934fc816fbbdb4773f4",
+    "miguellib/datasets/datasets/products_tokens.csv": "ecbf6995168ad3bf002815426a1c70b2951b6f2a83c7e0b630aa97cccb294fb6",
+    "features/ingredient_groups.json": "3e3190438e0115ff1d4f7bb4258b9bb783d0512f364abea9e1ce6888378d0270"
+  },
+  "code_hashes": {
+    "miguellib/models/vectorizer.py": "6803a69e6dab6431d26163cf87d368424aefe52c033089727396442baaf5ccf5",
+    "miguellib/models/user_profile.py": "bcd056a17b04250d1039c1546151fb4328df61e6c48739bcbc95ce48dd8e2050",
+    "miguellib/models/similarity.py": "6f5b50ea58e730832e0fba416335bf56d08c6aec2b2dd42730c1604dae02019f"
+  },
+  "artifact_hashes": {
+    "artifacts/product_vectors.npy": "b460cbe8494410b14f8d95ef48c50ecf8a520b9db9167b970ba6bbf0e08360ab",
+    "artifacts/product_index.json": "8785e9212c51528125c5936e374daa3c8594c10d55f3f2c6bb1ce4ab113be06e",
+    "artifacts/feature_schema.json": "22cc1a8acd959126d99e7e2bc0ea76e42c5a0ba6bc4347843d11917ec7703ab3",
+    "artifacts/tfidf.joblib": "2e6d147674b0d8d5ed2f72a40dc7ea2dc30f2d3abd9b6762e83995a2c40fbbcf"
+  },
+  "schema_version": "v1",
+  "extra": {
+    "artifacts_dir": "artifacts"
+  }
+}

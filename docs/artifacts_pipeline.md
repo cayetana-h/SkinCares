@@ -1,0 +1,33 @@
+# Artifacts Pipeline
+
+This pipeline builds vector artifacts and writes a manifest with hashes for data, code, and outputs.
+
+## What it produces
+- `artifacts/product_vectors.npy`
+- `artifacts/product_index.json`
+- `artifacts/feature_schema.json`
+- `artifacts/tfidf.joblib`
+- `artifacts/manifest.json`
+
+## Run locally
+```bash
+python scripts/build_artifacts.py --schema-version v1
+```
+
+## Validation
+Before building vectors, the pipeline validates required columns, basic quality checks, and
+presence of input files. The build fails fast if validation fails.
+
+## Manifest verification
+After building, you can verify that data, code, and artifact hashes match the manifest:
+
+```bash
+python scripts/verify_manifest.py
+```
+
+## Manifest contents
+The manifest stores:
+- `data_hashes`: hashes for dataset inputs
+- `code_hashes`: hashes for code used to build artifacts
+- `artifact_hashes`: hashes for outputs
+- `schema_version`: version label you pass on the command line

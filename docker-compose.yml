@@ -1,0 +1,11 @@
+services:
+  evaluation:
+    build: .
+    image: skincares:latest
+    working_dir: /app
+    command: ["python", "scripts/run_evaluation.py"]
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./features:/app/features
+      - ./miguellib:/app/miguellib
+      - ./scripts:/app/scripts
