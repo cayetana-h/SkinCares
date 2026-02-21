@@ -14,9 +14,10 @@ class ValidationIssue:
 
 class DataValidationError(ValueError):
     def __init__(self, issues: Iterable[ValidationIssue]):
-        messages = "\n".join(f"- {issue.message}" for issue in issues)
+        issues_list = list(issues)
+        messages = "\n".join(f"- {issue.message}" for issue in issues_list)
         super().__init__(f"Data validation failed:\n{messages}")
-        self.issues = list(issues)
+        self.issues = issues_list
 
 
 REQUIRED_PRODUCTS_COLUMNS = {"product_id", "category", "price"}
